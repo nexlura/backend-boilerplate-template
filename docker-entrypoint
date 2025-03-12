@@ -1,0 +1,11 @@
+#!/bin/sh
+# docker-entrypoint
+
+# enable the source
+source .env
+
+# run migrations as required
+goose -dir database/migrations up
+
+# run the command passed as arguments
+exec "$@"
