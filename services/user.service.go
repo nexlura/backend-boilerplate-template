@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"fmt"
 	"github.com/backend-boilerplate-template/infrastructure"
 	"github.com/backend-boilerplate-template/models"
 	"github.com/backend-boilerplate-template/utilities"
@@ -11,21 +12,33 @@ import (
 	"strconv"
 )
 
-func CreateUserService(newUserPayload models.Profile) (models.ProfileDTO, error) {
-	//found, _ := infrastructure.FetchUserByEmail(newUser.Email)
-	//if found.Email != "" {
-	//	return responses.StatusText(c, http.StatusConflict, fmt.Sprintf("user email: %s already exist", found.Email), nil)
-	//}
-	//
-	////hash pass
-	//hashedPassword, err := utilities.HashPassword(newUser.Password)
-	//
-	//if err != nil {
-	//	log.Printf("Error hashing password: %v", err)
-	//	return responses.InternalServerError(c, err.Error())
-	//}
-	//newUser.Password = hashedPassword
-	//
+func CreateUserService(newUserPayload models.Profile) (models.ProfileDTO, responses.ResponseError) {
+	// Fetch the user with matching email
+	fetcherOne, _ := infrastructure.FetchUserByParam(newUserPayload.Email)
+	fetcherTwo, _ := infrastructure.FetchUserByParam(newUserPayload.Phone)
+
+	// Check weather the found email or phone is not empty and throw error
+	if !utilities.IsStringEmpty(fetcherOne.ID) || !utilities.IsStringEmpty(fetcherTwo.ID) {
+		return models.ProfileDTO{}, responses.ResponseError{
+			Error:        errors.New("record match"),
+			ErrorCode:    responses.StatusConflict,
+			ErrorMessage: fmt.Sprintf("user with data: %s%s already exist", fetcherOne.Email, fetcherTwo.Phone),
+		}
+	}
+
+	//hash password
+	hashedPassword, err := utilities.HashPassword(newUserPayload.Password)
+	if err != nil {
+		log.Printf("Error hashing password: %v", err)
+		return models.ProfileDTO{}, responses.ResponseError{
+			Error:        errors.New("hashing error"),
+			ErrorCode:    responses.StatusInternalServerError,
+			ErrorMessage: "error hashing password",
+		}
+	}
+
+	// set the user password to the hashed
+	newUserPayload.Password = hashedPassword
 
 	// assign a default status if status is empty
 	if newUserPayload.Status == "" {
@@ -37,11 +50,15 @@ func CreateUserService(newUserPayload models.Profile) (models.ProfileDTO, error)
 
 	// Return db error if any
 	if infraError.Error != nil {
-		return models.ProfileDTO{}, infraError.Error
+		return models.ProfileDTO{}, responses.ResponseError{
+			Error:        infraError.Error,
+			ErrorCode:    infraError.ErrorCode,
+			ErrorMessage: infraError.ErrorMessage,
+		}
 	}
 
 	// Return response
-	return models.ProfileFromDomain(infraResult), nil
+	return models.ProfileFromDomain(infraResult), responses.ResponseError{}
 }
 
 func ListUsersService(c fiber.Ctx) ([]models.ProfileDTO, error) {

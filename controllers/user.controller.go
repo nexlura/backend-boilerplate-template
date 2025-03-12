@@ -22,8 +22,8 @@ func CreateUser(c fiber.Ctx) error {
 	result, resultError := services.CreateUserService(newUserPayload)
 
 	// Throw return error if any
-	if resultError != nil {
-		return responses.InternalServerError(c, resultError)
+	if resultError.Error != nil {
+		return responses.DynamicStatus(c, resultError.ErrorCode, resultError.ErrorMessage, nil)
 	}
 
 	// Return final response
