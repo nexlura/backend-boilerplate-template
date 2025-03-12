@@ -1,6 +1,7 @@
 package responses
 
 import (
+	"errors"
 	"github.com/gofiber/fiber/v3"
 	"net/http"
 )
@@ -21,6 +22,12 @@ const (
 	StatusInternalServerError = 500 // RFC 9110, 15.6.1
 	StatusBadGateway          = 502 // RFC 9110, 15.6.3
 )
+
+type ResponseError struct {
+	Error        error
+	ErrorMessage string
+	ErrorCode    int
+}
 
 type ResponseOKWithDataFormat struct {
 	Success bool        `json:"success"`
@@ -137,4 +144,30 @@ func InternalServerError(c fiber.Ctx, err error) error {
 	}
 
 	return c.Status(http.StatusInternalServerError).JSON(response)
+}
+
+// DynamicStatus StatusText returns a text for the HTTP status code.
+// It can be used in places where you don't know the exact error to return.
+// It returns the empty string if the code is unknown.
+func DynamicStatus(c fiber.Ctx, code int, message string, data interface{}) error {
+	switch code {
+	case StatusOK:
+		return ResponseOK(c, message)
+	case StatusCreated:
+		return ResponseCreated(c, data, message)
+	case StatusFound:
+		return ResponseOK(c, message)
+	case StatusBadRequest:
+		return BadRequestError(c, message)
+	case StatusUnauthorized:
+		return UnauthorizedError(c, message)
+	case StatusNotFound:
+		return RecordNotFoundError(c, message)
+	case StatusConflict:
+		return DataConflictError(c, message)
+	case StatusInternalServerError:
+		return InternalServerError(c, errors.New(message))
+	default:
+		return nil
+	}
 }

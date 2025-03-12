@@ -1,6 +1,7 @@
 package models
 
 import (
+	"mime/multipart"
 	"time"
 )
 
@@ -12,13 +13,27 @@ type Profile struct {
 	Password  string    `json:"password"`
 	Phone     string    `json:"phone"`
 	RoleId    string    `json:"role_id"`
-	Status    string    `json:"status"` // verified, pending, disabled
+	Status    string    `json:"status"` // active, pending, disabled
 	Avatar    string    `json:"avatar"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-type ProfileDto struct {
+type ProfileFrom struct {
+	ID        string                `form:"id"`
+	FirstName string                `form:"first_name"`
+	LastName  string                `form:"last_name"`
+	Email     string                `form:"email"`
+	Password  string                `form:"password"`
+	Phone     string                `form:"phone"`
+	RoleId    string                `form:"role_id"`
+	Status    string                `form:"status"` // active, pending, disabled
+	Avatar    *multipart.FileHeader `form:"avatar"`
+	CreatedAt time.Time             `form:"created_at"`
+	UpdatedAt time.Time             `form:"updated_at"`
+}
+
+type ProfileDTO struct {
 	Id        string    `json:"id"`
 	FirstName string    `json:"first_name"`
 	LastName  string    `json:"last_name"`
@@ -29,16 +44,16 @@ type ProfileDto struct {
 	UpdatedAt time.Time `json:"updated_at"`
 }
 
-func ProfileFromDomainList(pf []*Profile) []ProfileDto {
-	output := make([]ProfileDto, len(pf))
+func ProfileFromDomainList(pf []Profile) []ProfileDTO {
+	output := make([]ProfileDTO, len(pf))
 	for i, p := range pf {
 		output[i] = ProfileFromDomain(p)
 	}
 	return output
 }
 
-func ProfileFromDomain(p *Profile) ProfileDto {
-	return ProfileDto{
+func ProfileFromDomain(p Profile) ProfileDTO {
+	return ProfileDTO{
 		Id:        p.ID,
 		FirstName: p.FirstName,
 		Email:     p.Email,

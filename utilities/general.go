@@ -13,7 +13,7 @@ func IsStringEmpty(value string) bool {
 	return value == "" || len(value) == 0
 }
 
-//func MustError[T any](value T, err infrastructure.InfraError) T {
+//func MustError[T any](value T, err responses.ResponseError) T {
 //	if err != nil {
 //		panic(err)
 //	}

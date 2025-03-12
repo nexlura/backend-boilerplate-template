@@ -12,13 +12,13 @@ import (
 )
 
 type CustomCookie struct {
-	Profile        models.ProfileDto
+	Profile        models.ProfileDTO
 	CookieName     string
 	CookieValue    string
 	ExpirationTime time.Time
 }
 
-func GenerateCookie(profile *models.Profile) (*CustomCookie, error) {
+func GenerateCookie(profile models.Profile) (*CustomCookie, error) {
 	// Set the token in the session map, along with the session information
 	newCustomCookie := &CustomCookie{
 		Profile:        models.ProfileFromDomain(profile),

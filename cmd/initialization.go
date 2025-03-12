@@ -10,5 +10,5 @@ func InitializeRoutes(app fiber.Router) {
 
 	// secured routes
 	//app.Use(middlewares.AuthMiddleware)
-	routes.AccountRoutes(app)
+	routes.UserRoutes(app)
 }
