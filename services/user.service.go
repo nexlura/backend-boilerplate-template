@@ -26,6 +26,15 @@ func CreateUserService(newUserPayload models.Profile) (models.ProfileDTO, respon
 		}
 	}
 
+	// Check weather the password length is below 4 characters
+	if len(newUserPayload.Password) < 4 {
+		return models.ProfileDTO{}, responses.ResponseError{
+			Error:        errors.New("password length"),
+			ErrorCode:    responses.StatusBadRequest,
+			ErrorMessage: "password should be a minimum of 4 characters",
+		}
+	}
+
 	//hash password
 	hashedPassword, err := utilities.HashPassword(newUserPayload.Password)
 	if err != nil {

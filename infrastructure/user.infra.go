@@ -27,7 +27,7 @@ func SaveUser(newUser models.Profile) (models.Profile, responses.ResponseError) 
 	queriedRow, queriedError := DB.Conn.Query(
 		context.Background(), newUserSQL, newUser.ID, newUser.FirstName,
 		newUser.LastName, newUser.Email, newUser.Password, newUser.Phone,
-		newUser.RoleId, newUser.Status, newUser.Avatar)
+		newUser.RoleId, newUser.Status, newUser.Avatar, newUser.AuthToken)
 
 	// Throw error if insertion failed
 	if queriedError != nil {
