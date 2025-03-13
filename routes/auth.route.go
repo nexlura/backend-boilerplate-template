@@ -9,10 +9,10 @@ func AuthRoutes(app fiber.Router) {
 	app.Post("/auth/login", func(c fiber.Ctx) error {
 		return controllers.Login(c)
 	})
-	//
-	//app.Get("/auth/logout", func(c fiber.Ctx) error {
-	//	return controllers.Logout(c)
-	//})
+
+	app.Get("/auth/logout", func(c fiber.Ctx) error {
+		return controllers.Logout(c)
+	})
 	//
 	//app.Post("/auth/forgot-password", func(c fiber.Ctx) error {
 	//	return controllers.ForgotPassword(c)

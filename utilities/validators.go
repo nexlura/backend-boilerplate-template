@@ -5,6 +5,14 @@ import (
 	"fmt"
 )
 
+func ValidatePasswordLength(password string) error {
+	if len(password) < 4 {
+		return errors.New("password much be at least six characters long")
+	}
+
+	return nil
+}
+
 func ValidatePasswordsLength(password, confirmPassword string) error {
 	if len(password) < 6 && len(confirmPassword) < 6 {
 		return errors.New("passwords much be at least six characters long")

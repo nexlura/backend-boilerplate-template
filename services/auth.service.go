@@ -51,3 +51,53 @@ func LoginService(c fiber.Ctx, loginPayload requests.Login) (models.ProfileDTO, 
 
 	return models.ProfileFromDomain(user), responses.ResponseError{}
 }
+
+func LogoutService(c fiber.Ctx) (string, responses.ResponseError) {
+	// get cookie
+	cookie := c.Cookies("auth_cookie")
+
+	// throw error if cookieErr exists
+	if utilities.IsStringEmpty(cookie) {
+		return "", responses.ResponseError{
+			Error:        errors.New("cookie error"),
+			ErrorCode:    responses.StatusUnauthorized,
+			ErrorMessage: "auth cookie not provided",
+		}
+	}
+
+	cacheCookie, validatorErr := utilities.ValidateAuthCookie(c)
+	if validatorErr != nil {
+		return "", responses.ResponseError{
+			Error:        errors.New("cookie error"),
+			ErrorCode:    responses.StatusUnauthorized,
+			ErrorMessage: validatorErr.Error(),
+		}
+	}
+
+	// get the cache values
+	profileId := cacheCookie["Profile"].(map[string]interface{})["id"].(string)
+
+	// clear the cookie from redis cache
+	if deleteErr := utilities.RedisDeleteKey(cookie); deleteErr != nil {
+		return "", responses.ResponseError{
+			Error:        errors.New("redis error"),
+			ErrorCode:    responses.StatusBadRequest,
+			ErrorMessage: deleteErr.Error(),
+		}
+	}
+
+	// write cookie to the client
+	utilities.ResetCookie(c)
+
+	// update the user data with the new auth token
+	_, updateError := infrastructure.AlterUser(models.ProfileFrom{ID: profileId, AuthToken: "null"})
+	if updateError.Error != nil {
+		return "", responses.ResponseError{
+			Error:        errors.New("auth token update error"),
+			ErrorCode:    responses.StatusBadRequest,
+			ErrorMessage: updateError.Error.Error(),
+		}
+	}
+
+	return profileId, responses.ResponseError{}
+}

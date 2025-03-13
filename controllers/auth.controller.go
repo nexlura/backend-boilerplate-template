@@ -25,47 +25,23 @@ func Login(c fiber.Ctx) error {
 	if resultError.Error != nil {
 		return responses.DynamicStatus(c, resultError.ErrorCode, resultError.ErrorMessage, nil)
 	}
-	
+
 	// return the response
 	return responses.ResponseOKWithData(c, result, "login successfully")
 }
 
-//
-//func Logout(c fiber.Ctx) error {
-//
-//	// get cookie
-//	cookie := c.Cookies("auth_cookie")
-//
-//	// throw error if cookieErr exists
-//	if cookie == "" {
-//		return responses.UnauthorizedError(c, "auth cookie not provided")
-//	}
-//
-//	cacheCookie, validatorErr := ValidateAuthCookie(c)
-//	if validatorErr != nil {
-//		return responses.UnauthorizedError(c, validatorErr.Error())
-//	}
-//
-//	// get the cache values
-//	profileId := cacheCookie["Profile"].(map[string]interface{})["id"].(string)
-//
-//	// clear the cookie from redis cache
-//	if deleteErr := utilities.RedisDeleteKey(cookie); deleteErr != nil {
-//		return responses.BadRequestError(c, deleteErr.Error())
-//	}
-//
-//	// write cookie to the client
-//	utilities.ResetCookie(c)
-//
-//	// update the user data with the new auth token
-//	_, updateError := infrastructure.UpdateUser(models.Profile{AuthToken: "null"}, profileId)
-//	if updateError.Error != nil {
-//		return updateError.Error
-//	}
-//
-//	return responses.ResponseOK(c, "logout successfully")
-//}
-//
+func Logout(c fiber.Ctx) error {
+	// Invoke the logout service
+	_, resultError := services.LogoutService(c)
+
+	// Throw error if any occurs
+	if resultError.Error != nil {
+		return responses.DynamicStatus(c, resultError.ErrorCode, resultError.ErrorMessage, nil)
+	}
+
+	return responses.ResponseOK(c, "logout successfully")
+}
+
 //func ForgotPassword(c fiber.Ctx) error {
 //	var request struct {
 //		Email string `json:"email"`

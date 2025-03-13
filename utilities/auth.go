@@ -2,6 +2,7 @@ package utilities
 
 import (
 	"errors"
+	"github.com/gofiber/fiber/v3"
 	"os"
 	"time"
 
@@ -53,4 +54,35 @@ func DecodeJWT(tokenString string) (int, error) {
 	}
 
 	return 0, errors.New("invalid token")
+}
+
+func ValidateAuthCookie(c fiber.Ctx) (map[string]interface{}, error) {
+	// get cookie
+	cookie := c.Cookies("auth_cookie")
+
+	// throw error if cookieErr exists
+	if cookie == "" {
+		return nil, errors.New("auth cookie not provided")
+	}
+
+	// throw error if the cookie doesn't exist in the cache
+	cacheCookieData, cacheCookieErr := GetCacheCookie(cookie)
+	if cacheCookieErr != nil {
+		return nil, errors.New("invalid cookie provided")
+	}
+
+	// validate the cookie
+	validatedCookie, validatedCookieErr := ValidateCookie(cookie)
+
+	// throw error if the cookie is invalid
+	if validatedCookieErr != nil {
+		return nil, errors.New("invalid cookie")
+	}
+
+	// throw error for expires session
+	if validatedCookie.HasExpired {
+		return nil, errors.New("cookies has expired")
+	}
+
+	return cacheCookieData, nil
 }
