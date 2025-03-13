@@ -16,7 +16,7 @@ type RedisService struct {
 
 func getClient() *redis.Client {
 	return redis.NewClient(&redis.Options{
-		Addr:     "redis-dev.redis-dev:6379", // "localhost:6379", //
+		Addr:     "localhost:6379", // "redis-dev.redis-dev:6379", //
 		Password: "",
 		DB:       0,
 	})

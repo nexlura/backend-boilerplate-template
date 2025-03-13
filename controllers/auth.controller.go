@@ -1,41 +1,35 @@
 package controllers
 
-//func Login(c fiber.Ctx) error {
-//	var loginRequest requests.Login
-//
-//	if err := c.BodyParser(&loginRequest); err != nil {
-//		log.Printf("Error parsing body: %v", err)
-//		return responses.InternalServerError(c, "Error parsing body")
-//	}
-//
-//	//Fetch the user
-//	user, fetchError := infrastructure.FetchUserByEmail(loginRequest.Email)
-//	if fetchError.Error != nil {
-//		return responses.StatusText(c, fetchError.ErrorCode, fetchError.ErrorMessage, nil)
-//	}
-//
-//	// response output
-//	output := models.ProfileFromDomain(&user)
-//
-//	// first check if the user is not logged in before generating a new token
-//	isAlreadyLoggedIn := infrastructure.CheckUserLoginState(c, user)
-//	if isAlreadyLoggedIn {
-//		return responses.ResponseOKWithData(c, output, "you are already authenticated")
-//	}
-//
-//	//Check passwords
-//	if utilities.CheckPasswordHash(user.Password, loginRequest.Password) != nil {
-//		return responses.BadRequestErrorWithMessage(c, "incorrect password")
-//	}
-//
-//	//Authenticate user and generate cookie
-//	if authenticateError := infrastructure.GenerateCookieAndAuthenticate(c, user); authenticateError != nil {
-//		return responses.InternalServerError(c, authenticateError.Error())
-//	}
-//
-//	return responses.ResponseOKWithData(
-//		c, output, "login successfully")
-//}
+import (
+	"github.com/backend-boilerplate-template/requests"
+	"github.com/backend-boilerplate-template/services"
+	"github.com/backend-boilerplate-template/utilities/responses"
+	"github.com/gofiber/fiber/v3"
+	"log"
+)
+
+func Login(c fiber.Ctx) error {
+	// Get the request payload
+	var loginRequest requests.Login
+
+	// Bind the request data
+	if err := c.Bind().Body(&loginRequest); err != nil {
+		log.Printf("Error parsing body: %v", err)
+		return responses.InternalServerError(c, err)
+	}
+
+	// Pass the request to the login service
+	result, resultError := services.LoginService(c, loginRequest)
+
+	// Check weather the result error exits and throw it
+	if resultError.Error != nil {
+		return responses.DynamicStatus(c, resultError.ErrorCode, resultError.ErrorMessage, nil)
+	}
+	
+	// return the response
+	return responses.ResponseOKWithData(c, result, "login successfully")
+}
+
 //
 //func Logout(c fiber.Ctx) error {
 //

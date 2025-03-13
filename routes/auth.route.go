@@ -6,13 +6,9 @@ import (
 )
 
 func AuthRoutes(app fiber.Router) {
-	app.Post("/auth/register", func(c fiber.Ctx) error {
-		return controllers.CreateUser(c)
+	app.Post("/auth/login", func(c fiber.Ctx) error {
+		return controllers.Login(c)
 	})
-
-	//app.Post("/auth/login", func(c fiber.Ctx) error {
-	//	return controllers.Login(c)
-	//})
 	//
 	//app.Get("/auth/logout", func(c fiber.Ctx) error {
 	//	return controllers.Logout(c)

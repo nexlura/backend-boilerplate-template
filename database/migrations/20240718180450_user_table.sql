@@ -10,6 +10,7 @@ CREATE TABLE IF NOT EXISTS users (
      "role_id" VARCHAR(50) NOT NULL,
      "status" VARCHAR(50) NOT NULL DEFAULT 'active',
      "avatar" TEXT,
+     "auth_token" TEXT,
      "created_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
      "updated_at" TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP
 );

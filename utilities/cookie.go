@@ -48,18 +48,18 @@ func GetCookieDomain(origin string) string {
 	return domain
 }
 
-type validateCookieStruct struct {
+type ValidateCookieStruct struct {
 	IsValid    bool
 	CacheData  map[string]interface{}
 	HasExpired bool
 }
 
-// we'll use this method later to determine if the session has expired
-func ValidateCookie(key string) (validateCookieStruct, error) {
+// ValidateCookie we'll use this method later to determine if the session has expired
+func ValidateCookie(key string) (ValidateCookieStruct, error) {
 	cookie, err := GetCacheCookie(key)
 
 	if err != nil {
-		return validateCookieStruct{
+		return ValidateCookieStruct{
 			IsValid:    false,
 			CacheData:  nil,
 			HasExpired: false,
@@ -70,7 +70,7 @@ func ValidateCookie(key string) (validateCookieStruct, error) {
 	expTime, expErr := time.Parse("2006-01-02T15:04:05.999Z", cookie["ExpirationTime"].(string))
 
 	if expErr != nil {
-		return validateCookieStruct{
+		return ValidateCookieStruct{
 			IsValid:    true,
 			CacheData:  nil,
 			HasExpired: false,
@@ -79,14 +79,14 @@ func ValidateCookie(key string) (validateCookieStruct, error) {
 
 	// returns true if the cookie has expired
 	if time.Now().After(expTime) {
-		return validateCookieStruct{
+		return ValidateCookieStruct{
 			IsValid:    false,
 			CacheData:  cookie,
 			HasExpired: true,
 		}, nil
 	}
 
-	return validateCookieStruct{
+	return ValidateCookieStruct{
 		IsValid:    false,
 		CacheData:  cookie,
 		HasExpired: false,

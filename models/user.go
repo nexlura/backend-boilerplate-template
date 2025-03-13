@@ -15,6 +15,7 @@ type Profile struct {
 	RoleId    string    `json:"role_id"`
 	Status    string    `json:"status"` // active, pending, disabled
 	Avatar    string    `json:"avatar"`
+	AuthToken string    `json:"auth_token"`
 	CreatedAt time.Time `json:"created_at"`
 	UpdatedAt time.Time `json:"updated_at"`
 }
@@ -29,6 +30,7 @@ type ProfileFrom struct {
 	RoleId    string                `form:"role_id"`
 	Status    string                `form:"status"` // active, pending, disabled
 	Avatar    *multipart.FileHeader `form:"avatar"`
+	AuthToken string                `form:"auth_token"`
 	CreatedAt time.Time             `form:"created_at"`
 	UpdatedAt time.Time             `form:"updated_at"`
 }

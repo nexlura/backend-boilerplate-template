@@ -7,6 +7,7 @@ SET first_name = COALESCE(NULLIF($2,''), "user".first_name),
     role_id = COALESCE(NULLIF($7,''), "user".role_id),
     status = COALESCE(NULLIF($8,''), "user".status),
     avatar = COALESCE(NULLIF($9,''), "user".avatar),
+    auth_token = COALESCE(NULLIF($10,''), "user".auth_token),,
     updated_at = CURRENT_TIMESTAMP
 WHERE "user".id = $1;
 

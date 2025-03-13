@@ -14,8 +14,8 @@ import (
 
 func CreateUserService(newUserPayload models.Profile) (models.ProfileDTO, responses.ResponseError) {
 	// Fetch the user with matching email
-	fetcherOne, _ := infrastructure.FetchUserByParam(newUserPayload.Email)
-	fetcherTwo, _ := infrastructure.FetchUserByParam(newUserPayload.Phone)
+	fetcherOne, _ := infrastructure.FindUserByParam(newUserPayload.Email)
+	fetcherTwo, _ := infrastructure.FindUserByParam(newUserPayload.Phone)
 
 	// Check weather the found email or phone is not empty and throw error
 	if !utilities.IsStringEmpty(fetcherOne.ID) || !utilities.IsStringEmpty(fetcherTwo.ID) {
@@ -76,7 +76,7 @@ func ListUsersService(c fiber.Ctx) ([]models.ProfileDTO, error) {
 	}
 
 	// Pass the page to fetch the users
-	infraResult, infraError := infrastructure.FetchUsers(page)
+	infraResult, infraError := infrastructure.FindUsers(page)
 	if infraError.Error != nil {
 		return nil, infraError.Error
 	}
@@ -104,7 +104,7 @@ func GetUserService(c fiber.Ctx) (models.ProfileDTO, responses.ResponseError) {
 	}
 
 	// Pass the para for db operation
-	infraResult, infraError := infrastructure.FetchUserByParam(param)
+	infraResult, infraError := infrastructure.FindUserByParam(param)
 	if infraError.Error != nil {
 		return models.ProfileDTO{}, infraError
 	}
@@ -135,7 +135,7 @@ func UpdateUserService(c fiber.Ctx, userPayload models.ProfileFrom) (models.Prof
 	userPayload.ID = paramId
 
 	// Check if the user exists
-	_, fetchError := infrastructure.FetchUserByParam(userPayload.ID)
+	_, fetchError := infrastructure.FindUserByParam(userPayload.ID)
 	if fetchError.Error != nil {
 		return models.ProfileDTO{}, fetchError
 	}
@@ -199,7 +199,7 @@ func DeleteUserService(c fiber.Ctx) (models.ProfileDTO, responses.ResponseError)
 	}
 
 	// Check if the user exists
-	fetchUser, fetchError := infrastructure.FetchUserByParam(paramId)
+	fetchUser, fetchError := infrastructure.FindUserByParam(paramId)
 	if fetchError.Error != nil {
 		return models.ProfileDTO{}, fetchError
 	}

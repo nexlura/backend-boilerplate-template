@@ -52,7 +52,7 @@ func SaveUser(newUser models.Profile) (models.Profile, responses.ResponseError) 
 	return collectedRow, responses.ResponseError{}
 }
 
-func FetchUsers(page int) ([]models.Profile, responses.ResponseError) {
+func FindUsers(page int) ([]models.Profile, responses.ResponseError) {
 	// Set the pagination limit and offset
 	limit := 10
 	offset := (page - 1) * limit
@@ -96,7 +96,7 @@ func FetchUsers(page int) ([]models.Profile, responses.ResponseError) {
 	return collectedItem, responses.ResponseError{}
 }
 
-func FetchUserByParam(param string) (models.Profile, responses.ResponseError) {
+func FindUserByParam(param string) (models.Profile, responses.ResponseError) {
 	// Read the SQL
 	getSQL, sqlErr := utilities.ReadQuery("./queries/users/get_by_args.sql")
 	if sqlErr != nil {
@@ -149,7 +149,7 @@ func AlterUser(payload models.ProfileFrom) (models.Profile, responses.ResponseEr
 	// Execute the insertion query
 	_, queriedError := DB.Conn.Query(
 		context.Background(), string(updateSQL), payload.ID, payload.FirstName, payload.LastName, payload.Email,
-		payload.Password, payload.Phone, payload.RoleId, payload.Status, payload.Avatar)
+		payload.Password, payload.Phone, payload.RoleId, payload.Status, payload.Avatar, payload.AuthToken)
 
 	// Throw error if updating failed
 	if queriedError != nil {
@@ -158,7 +158,7 @@ func AlterUser(payload models.ProfileFrom) (models.Profile, responses.ResponseEr
 	}
 
 	// Get the updated row
-	collectedRow, _ := FetchUserByParam(payload.ID)
+	collectedRow, _ := FindUserByParam(payload.ID)
 
 	// Return the newly inserted item
 	return collectedRow, responses.ResponseError{}
