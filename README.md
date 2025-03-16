@@ -1,5 +1,9 @@
 # backend-boilerplate-template
-This is our official nexlura backend boilerplate template
+This is our official nexlura backend boilerplate template.
+The template has the following integrated:
+1. User Account CRUD Operations
+2. Authentication 
+3. Redis Configuration 
 
 - run : go mod download
 - run : go install github.com/air-verse/air@latest
